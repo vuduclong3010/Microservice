@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ProjectServiceA.Dto
+namespace ProjectServiceB.Dto
 {
     public class OrderDto
     {
@@ -23,7 +23,5 @@ namespace ProjectServiceA.Dto
         public bool IsDelete { get; set; }
 
         public string IsActive { get; set; }
-
-        public string CustomerId { get; set; } 
     }
 }

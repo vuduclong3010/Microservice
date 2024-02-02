@@ -18,8 +18,8 @@ namespace ProjectServiceA.Service
         public async Task<Dictionary<string, object>> GetDatabase()
         {
             var dictionary = new Dictionary<string, object>();
-            dictionary.Add("Order", await GetOrdes());
             dictionary.Add("Customer", await GetCustomers());
+            dictionary.Add("Order", await GetOrdes());
             dictionary.Add("Product", await GetProducts());
             dictionary.Add("OrderDetail", await GetOrderDetails());
             return dictionary;
@@ -38,7 +38,8 @@ namespace ProjectServiceA.Service
                 Node = x.Node,
                 OrderDate = x.OrderDate,
                 Phone = x.Phone,
-                TotalMoney = x.TotalMoney
+                TotalMoney = x.TotalMoney,
+                CustomerId = x.CustomerId,
             }).ToListAsync();
 
             return orders;
@@ -56,9 +57,18 @@ namespace ProjectServiceA.Service
             return products;
         }
 
-        public async Task<List<OrderDetail>> GetOrderDetails()
+        public async Task<List<OrderDetailDto>> GetOrderDetails()
         {
-            var orderDetails = await _context.OrderDetails.ToListAsync();
+            var orderDetails = await _context.OrderDetails.Select(x => new OrderDetailDto
+            {
+                Id = x.Id,
+                IdProduct = x.IdProduct,
+                OrderId = x.OrderId,
+                Price = x.Price,
+                Qty = x.Qty,
+                ReturnQty = x.ReturnQty,
+                Total = x.Total,
+            }).ToListAsync();
             return orderDetails;
         }
     }

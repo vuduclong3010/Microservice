@@ -1,9 +1,9 @@
-
+using AutoMapper;
 using Hangfire;
 using Hangfire.Dashboard;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using ProjectServiceB.Entity;
+using ProjectServiceB.Mapper;
 using ProjectServiceB.Service;
 
 namespace ProjectServiceB
@@ -31,9 +31,15 @@ namespace ProjectServiceB
 
             builder.Services.AddDbContext<DatabaseContext>(db => db.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Singleton);
 
-            builder.Services.AddTransient<IInsertOrUpdateService, InsertOrUpdateService>();
+            builder.Services.AddTransient<IHandleDatabaseService, HandleDatabaseService>();
 
- 
+            var mapperConfig = new MapperConfiguration(
+                                    mc => { mc.AddProfile(new MapperConfig()); }
+                                );
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            builder.Services.AddSingleton(mapper);
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -52,6 +58,8 @@ namespace ProjectServiceB
                 Authorization = Enumerable.Empty<IDashboardAuthorizationFilter>()
             });
             app.MapHangfireDashboard();
+
+            RecurringJob.AddOrUpdate<IHandleDatabaseService>("InsertOrUpdateDatabase", x => x.HandleDatabaseTable("http://localhost:5095/api/Homes/GetDatabase"), Cron.Minutely);
 
             app.MapControllers();
 

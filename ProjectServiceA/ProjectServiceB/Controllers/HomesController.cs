@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using ProjectServiceB.Models;
 using ProjectServiceB.Service;
 
 namespace ProjectServiceB.Controllers
@@ -8,17 +8,17 @@ namespace ProjectServiceB.Controllers
     [ApiController]
     public class HomesController : ControllerBase
     {
-        private readonly IInsertOrUpdateService _insertDatabase;
+        private readonly IHandleDatabaseService _handleDatabase;
 
-        public HomesController(IInsertOrUpdateService insertDatabase)
+        public HomesController(IHandleDatabaseService handleDatabase)
         {
-            _insertDatabase = insertDatabase;
+            _handleDatabase = handleDatabase;
         }
 
-        [HttpGet]
+        [HttpGet("InsertOrUpdateDatabase")]
         public async Task<IActionResult> InsertDatabase()
         {
-            return Ok(_insertDatabase.InsertOrUpdateDatabase("http://localhost:5095/api/Homes/GetDatabase"));
+            return Ok(await _handleDatabase.HandleDatabaseTable("http://localhost:5095/api/Homes/GetDatabase"));
         }
     }
 }
